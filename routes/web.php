@@ -3,28 +3,39 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Superadmin\SchoolController;
 use App\Http\Controllers\Superadmin\DashboardController;
+use App\Http\Controllers\Admin\DashboardController as AdminDashboard;
+use App\Http\Controllers\Admin\SchoolIdentityController;
+use App\Http\Controllers\Admin\NewsController;
 use Illuminate\Support\Facades\Route;
-
 
 Route::get('/', function () {
     return view('welcome');
 });
 
+// 1. Dashboard Redirect Logic
 Route::get('/dashboard', function () {
     if (auth()->user()->school_id === null) {
         return redirect()->route('superadmin.dashboard');
     }
-    return view('dashboard'); // Dashboard untuk Admin Sekolah
+    return app(AdminDashboard::class)->index();
 })->middleware(['auth', 'verified'])->name('dashboard');
 
+// 2. Superadmin Routes
 Route::middleware(['auth', 'superadmin'])->prefix('superadmin')->group(function () {
-    // Halaman Visual Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('superadmin.dashboard');
-
     Route::post('/schools', [SchoolController::class, 'store'])->name('superadmin.schools.store');
-    // Tambahkan rute manajemen sekolah lainnya di sini
+    Route::get('/schools/{school:uuid}', [SchoolController::class, 'show'])->name('superadmin.schools.show');
+    Route::post('/schools/{school}/admins', [SchoolController::class, 'storeAdmin'])->name('superadmin.schools.storeAdmin');
 });
 
+// 3. Admin Sekolah Routes (TAMBAHKAN INI)
+Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/identity', [SchoolIdentityController::class, 'edit'])->name('identity.edit');
+    Route::put('/identity', [SchoolIdentityController::class, 'update'])->name('identity.update');
+    Route::resource('news', NewsController::class);
+});
+
+// 4. Profile & Auth
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');

@@ -23,6 +23,8 @@ class News extends Model
         'is_published',
     ];
 
+    protected $with = ['school'];
+
     /**
      * Boot model untuk menerapkan Global Scope dan logic otomatis.
      */
@@ -33,7 +35,8 @@ class News extends Model
 
         // 2. Isi otomatis school_id saat menyimpan data baru (INSERT)
         static::creating(function ($model) {
-            if (auth()->check()) {
+            // HANYA isi jika school_id kosong dan user yang login punya school_id
+            if (empty($model->school_id) && auth()->check() && auth()->user()->school_id) {
                 $model->school_id = auth()->user()->school_id;
             }
         });
