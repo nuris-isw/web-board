@@ -30,6 +30,9 @@
                     <x-nav-link :href="route('admin.achievement.index')" :active="request()->routeIs('admin.achievement.*')">
                         {{ __('Prestasi') }}
                     </x-nav-link>
+                    <x-nav-link :href="route('admin.extracurricular.index')" :active="request()->routeIs('admin.extracurricular.*')">
+                        {{ __('Ekstrakurikuler') }}
+                    </x-nav-link>
                 </div>
             </div>
 
@@ -99,6 +102,9 @@
             </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('admin.achievement.index')" :active="request()->routeIs('admin.achievement.*')">
                 {{ __('Prestasi') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('admin.extracurricular.index')" :active="request()->routeIs('admin.extracurricular.*')">
+                {{ __('Ekstrakurikuler') }}
             </x-responsive-nav-link>
         </div>
 

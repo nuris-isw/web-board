@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\NewsController;
 use App\Http\Controllers\Admin\GalleryController;
 use App\Http\Controllers\Admin\FacilityController;
 use App\Http\Controllers\Admin\AchievementController;
+use App\Http\Controllers\Admin\ExtracurricularController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -39,6 +40,7 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     Route::resource('gallery', GalleryController::class);
     Route::resource('facility', FacilityController::class);
     Route::resource('achievement', AchievementController::class);
+    Route::resource('extracurricular', ExtracurricularController::class);
 });
 
 // 4. Profile & Auth
