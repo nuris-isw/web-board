@@ -10,6 +10,8 @@ use App\Http\Controllers\Admin\GalleryController;
 use App\Http\Controllers\Admin\FacilityController;
 use App\Http\Controllers\Admin\AchievementController;
 use App\Http\Controllers\Admin\ExtracurricularController;
+use App\Http\Controllers\Admin\TeacherController;
+use App\Http\Controllers\Admin\PpdbController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -41,6 +43,10 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     Route::resource('facility', FacilityController::class);
     Route::resource('achievement', AchievementController::class);
     Route::resource('extracurricular', ExtracurricularController::class);
+    Route::resource('teacher', TeacherController::class);
+    Route::resource('ppdb', PpdbController::class);
+    Route::post('ppdb/{ppdb}/periods', [PpdbController::class, 'storePeriod'])->name('ppdb.periods.store');
+    Route::delete('ppdb/periods/{period}', [PpdbController::class, 'destroyPeriod'])->name('ppdb.periods.destroy');
 });
 
 // 4. Profile & Auth

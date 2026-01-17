@@ -1,0 +1,77 @@
+<x-app-layout>
+    <x-slot name="header">
+        <h2 class="font-bold text-xl text-gray-800 leading-tight">Edit Personel: {{ $teacher->name }}</h2>
+    </x-slot>
+
+    <div class="py-12">
+        <div class="max-w-3xl mx-auto sm:px-6 lg:px-8">
+            <div class="bg-white shadow-xl sm:rounded-[2rem] border border-gray-100 overflow-hidden">
+                <form action="{{ route('admin.teacher.update', $teacher->id) }}" method="POST" enctype="multipart/form-data" class="p-8 md:p-10 space-y-6">
+                    @csrf
+                    @method('PUT')
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="md:col-span-2 flex justify-center">
+                            <div class="text-center">
+                                <x-input-label value="Foto Profil" class="text-[10px] font-black uppercase tracking-widest text-indigo-600 mb-4" />
+                                <div class="relative inline-block">
+                                    <img id="preview" 
+                                         src="{{ $teacher->photo ? asset('storage/' . $teacher->photo) : 'https://ui-avatars.com/api/?name='.urlencode($teacher->name).'&background=F3F4F6&color=A5B4FC' }}" 
+                                         class="w-32 h-32 rounded-full object-cover border-4 border-white shadow-lg">
+                                    <label class="absolute bottom-0 right-0 bg-indigo-600 p-2 rounded-full text-white cursor-pointer shadow-lg hover:bg-indigo-700 transition-colors border-2 border-white">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 4v16m8-8H4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                        <input type="file" name="photo" class="hidden" onchange="document.getElementById('preview').src = window.URL.createObjectURL(this.files[0])">
+                                    </label>
+                                </div>
+                                <p class="text-[9px] text-gray-400 mt-3 italic">* Klik ikon plus untuk mengganti foto</p>
+                            </div>
+                        </div>
+
+                        <div>
+                            <x-input-label for="name" value="Nama Lengkap & Gelar" class="text-[10px] font-black uppercase tracking-widest text-indigo-600 mb-2" />
+                            <x-text-input name="name" type="text" class="block w-full py-3" :value="old('name', $teacher->name)" required />
+                        </div>
+
+                        <div>
+                            <x-input-label for="nip" value="NIP / NUPTK" class="text-[10px] font-black uppercase tracking-widest text-indigo-600 mb-2" />
+                            <x-text-input name="nip" type="text" class="block w-full py-3" :value="old('nip', $teacher->nip)" />
+                        </div>
+
+                        <div>
+                            <x-input-label for="position" value="Jabatan / Bidang Studi" class="text-[10px] font-black uppercase tracking-widest text-indigo-600 mb-2" />
+                            <x-text-input name="position" type="text" class="block w-full py-3" :value="old('position', $teacher->position)" required />
+                        </div>
+
+                        <div>
+                            <x-input-label for="type" value="Kategori" class="text-[10px] font-black uppercase tracking-widest text-indigo-600 mb-2" />
+                            <select name="type" class="block w-full rounded-xl border-gray-200 py-3 text-sm font-bold">
+                                <option value="guru" {{ $teacher->type == 'guru' ? 'selected' : '' }}>Guru (Tenaga Pendidik)</option>
+                                <option value="staf" {{ $teacher->type == 'staf' ? 'selected' : '' }}>Staf (Kependidikan)</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <x-input-label for="order" value="Urutan Tampilan" class="text-[10px] font-black uppercase tracking-widest text-indigo-600 mb-2" />
+                            <x-text-input name="order" type="number" class="block w-full py-3" :value="old('order', $teacher->order)" required />
+                        </div>
+
+                        <div>
+                            <x-input-label for="is_active" value="Status" class="text-[10px] font-black uppercase tracking-widest text-indigo-600 mb-2" />
+                            <select name="is_active" class="block w-full rounded-xl border-gray-200 py-3 text-sm font-bold">
+                                <option value="1" {{ $teacher->is_active ? 'selected' : '' }}>Aktif Mengajar</option>
+                                <option value="0" {{ !$teacher->is_active ? 'selected' : '' }}>Non-Aktif</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="pt-6 border-t border-gray-100 flex justify-between items-center">
+                        <a href="{{ route('admin.teacher.index') }}" class="text-xs font-bold text-gray-400 hover:text-gray-600 uppercase tracking-widest">Batal</a>
+                        <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white font-black px-12 py-4 rounded-2xl shadow-xl shadow-indigo-100 uppercase text-[10px] tracking-widest transition-all active:scale-95">
+                            Update Data Personel
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</x-app-layout>
