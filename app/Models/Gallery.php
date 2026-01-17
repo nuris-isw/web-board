@@ -18,6 +18,8 @@ class Gallery extends Model
         'school_id',
         'title',
         'image_path',
+        'type',     
+        'order',
         'category',
     ];
 

@@ -11,60 +11,115 @@ class GalleryController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Gallery::latest();
+        $query = Gallery::query();
 
-        // Fitur Filter jika kategori dipilih
-        if ($request->has('category') && $request->category != '') {
+        // Fitur Filter
+        if ($request->filled('type')) {
+            $query->where('type', $request->type);
+        }
+
+        if ($request->filled('category')) {
             $query->where('category', $request->category);
         }
 
-        $galleries = $query->paginate(12);
+        // Sorting: Slider dulu berdasarkan order, baru gallery terbaru
+        $galleries = $query->orderBy('type', 'asc')
+                           ->orderBy('order', 'asc')
+                           ->latest()
+                           ->paginate(12)
+                           ->withQueryString();
         
-        // Ambil semua kategori unik untuk tombol filter
-        $categories = Gallery::whereNotNull('category')
-                            ->distinct()
-                            ->pluck('category');
+        $categories = Gallery::whereNotNull('category')->distinct()->pluck('category');
+        $types = ['slider', 'home', 'gallery'];
 
-        return view('admin.gallery.index', compact('galleries', 'categories'));
+        return view('admin.gallery.index', compact('galleries', 'categories', 'types'));
     }
 
     public function create()
     {
-        return view('admin.gallery.create');
+        // Ambil kategori yang sudah ada untuk saran/autocomplete di form jika perlu
+        $existingCategories = Gallery::whereNotNull('category')->distinct()->pluck('category');
+        
+        return view('admin.gallery.create', compact('existingCategories'));
     }
 
     public function store(Request $request)
     {
         $request->validate([
+            'title' => 'required|string|max:255',
+            'type' => 'required|in:slider,home,gallery',
+            'order' => 'nullable|integer|min:0',
             'category' => 'nullable|string|max:100',
-            'images.*' => 'required|image|mimes:jpg,jpeg,png|max:3072'
+            'image' => 'required|image|mimes:jpg,jpeg,png,webp|max:3072'
         ]);
 
-        if ($request->hasFile('images')) {
-            foreach ($request->file('images') as $file) {
-                // Buat nama file unik
-                $fileName = time() . '_' . Str::random(8) . '.' . $file->getClientOriginalExtension();
-                
-                // Pindahkan file secara fisik
-                $file->move(storage_path('app/public/gallery'), $fileName);
+        if ($request->hasFile('image')) {
+            $file = $request->file('image');
+            $fileName = time() . '_' . Str::random(8) . '.' . $file->getClientOriginalExtension();
+            
+            // Menggunakan move() sesuai permintaan Anda
+            $file->move(storage_path('app/public/gallery'), $fileName);
 
-                // Buat record di database
-                Gallery::create([
-                    'title' => $file->getClientOriginalName(),
-                    'category' => $request->category,
-                    'image_path' => 'gallery/' . $fileName
-                ]);
-            }
+            Gallery::create([
+                'school_id' => auth()->user()->school_id,
+                'title' => $request->title,
+                'type' => $request->type,
+                'order' => $request->order ?? 0,
+                'category' => $request->category,
+                'image_path' => 'gallery/' . $fileName
+            ]);
         }
 
-        return redirect()->route('admin.gallery.index')->with('success', 'Foto-foto berhasil diunggah.');
+        return redirect()->route('admin.gallery.index')->with('success', 'Konten berhasil diunggah.');
+    }
+
+    public function edit(Gallery $gallery)
+    {
+        return view('admin.gallery.edit', compact('gallery'));
+    }
+
+    public function update(Request $request, Gallery $gallery)
+    {
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'type' => 'required|in:slider,home,gallery',
+            'order' => 'nullable|integer|min:0',
+            'category' => 'nullable|string|max:100',
+            'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:3072'
+        ]);
+
+        $data = [
+            'title' => $request->title,
+            'type' => $request->type,
+            'order' => $request->order ?? 0,
+            'category' => $request->category,
+        ];
+
+        if ($request->hasFile('image')) {
+            // Hapus file fisik lama menggunakan unlink
+            $oldPath = storage_path('app/public/' . $gallery->image_path);
+            if (file_exists($oldPath)) {
+                unlink($oldPath);
+            }
+
+            $file = $request->file('image');
+            $fileName = time() . '_' . Str::random(8) . '.' . $file->getClientOriginalExtension();
+            $file->move(storage_path('app/public/gallery'), $fileName);
+            
+            $data['image_path'] = 'gallery/' . $fileName;
+        }
+
+        $gallery->update($data);
+
+        return redirect()->route('admin.gallery.index')->with('success', 'Konten berhasil diperbarui.');
     }
 
     public function destroy(Gallery $gallery)
     {
-        // Hapus file fisik
-        if ($gallery->image_path && file_exists(storage_path('app/public/' . $gallery->image_path))) {
-            unlink(storage_path('app/public/' . $gallery->image_path));
+        $filePath = storage_path('app/public/' . $gallery->image_path);
+        
+        if (file_exists($filePath)) {
+            unlink($filePath);
         }
 
         $gallery->delete();
