@@ -24,13 +24,17 @@ class SchoolIdentity extends Model
         'school_id',
         'logo',
         'welcome_message',
+        'headmaster_name',   
+        'headmaster_image',
         'history',
         'vision',
         'mission',
+        'curriculum',
         'address',
         'email',
         'phone',
         'social_media',
+        'google_maps',
     ];
 
     /**
