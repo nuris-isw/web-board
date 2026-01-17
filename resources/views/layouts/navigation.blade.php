@@ -21,6 +21,9 @@
                     <x-nav-link :href="route('admin.news.index')" :active="request()->routeIs('admin.news.*')">
                         {{ __('Berita') }}
                     </x-nav-link>
+                    <x-nav-link :href="route('admin.gallery.index')" :active="request()->routeIs('admin.gallery.*')">
+                        {{ __('Galeri') }}
+                    </x-nav-link>
                 </div>
             </div>
 
@@ -81,6 +84,9 @@
             </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('admin.news.index')" :active="request()->routeIs('admin.news.*')">
                 {{ __('Berita') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('admin.gallery.index')" :active="request()->routeIs('admin.gallery.*')">
+                {{ __('Galeri') }}
             </x-responsive-nav-link>
         </div>
 
