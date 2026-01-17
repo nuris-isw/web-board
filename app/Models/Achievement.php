@@ -2,12 +2,12 @@
 
 namespace App\Models;
 
-use App\Models\Scopes\SchoolScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Models\Scopes\SchoolScope;
 
-class Gallery extends Model
+class Achievement extends Model
 {
     use HasFactory;
 
@@ -16,9 +16,14 @@ class Gallery extends Model
      */
     protected $fillable = [
         'school_id',
+        'achievement_type', // siswa, guru, sekolah
         'title',
-        'image_path',
-        'category',
+        'winner_name',
+        'competition_name',
+        'level',            // kecamatan, kabupaten, dll
+        'year',
+        'description',
+        'image',
     ];
 
     /**
@@ -26,32 +31,29 @@ class Gallery extends Model
      */
     protected static function booted(): void
     {
-        // 1. Filter otomatis saat memanggil data (SELECT)
+        // 1. Filter otomatis berdasarkan sekolah user yang login
         static::addGlobalScope(new SchoolScope);
 
-        // 2. Isi otomatis school_id saat menyimpan data baru (INSERT)
+        // 2. Isi otomatis school_id saat INSERT
         static::creating(function ($model) {
-            if (empty($model->school_id) && auth()->check()) {
+            if (empty($model->school_id) && auth()->check() && auth()->user()->school_id) {
                 $model->school_id = auth()->user()->school_id;
             }
         });
+
+        // 3. Hapus file fisik image saat record dihapus
+        static::deleting(function ($model) {
+            if ($model->image && file_exists(storage_path('app/public/' . $model->image))) {
+                unlink(storage_path('app/public/' . $model->image));
+            }
+        });
     }
-    
+
     /**
      * Relasi ke model School.
-     * Foto galeri terikat pada satu sekolah tertentu.
      */
     public function school(): BelongsTo
     {
         return $this->belongsTo(School::class);
-    }
-
-    /**
-     * Helper untuk mendapatkan URL gambar yang lengkap.
-     * Sangat berguna untuk kebutuhan API Frontend.
-     */
-    public function getImageUrlAttribute(): string
-    {
-        return asset('storage/' . $this->image_path);
     }
 }

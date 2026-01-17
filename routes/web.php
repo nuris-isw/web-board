@@ -7,6 +7,8 @@ use App\Http\Controllers\Admin\DashboardController as AdminDashboard;
 use App\Http\Controllers\Admin\SchoolIdentityController;
 use App\Http\Controllers\Admin\NewsController;
 use App\Http\Controllers\Admin\GalleryController;
+use App\Http\Controllers\Admin\FacilityController;
+use App\Http\Controllers\Admin\AchievementController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -35,6 +37,8 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     Route::put('/identity', [SchoolIdentityController::class, 'update'])->name('identity.update');
     Route::resource('news', NewsController::class);
     Route::resource('gallery', GalleryController::class);
+    Route::resource('facility', FacilityController::class);
+    Route::resource('achievement', AchievementController::class);
 });
 
 // 4. Profile & Auth

@@ -24,6 +24,12 @@
                     <x-nav-link :href="route('admin.gallery.index')" :active="request()->routeIs('admin.gallery.*')">
                         {{ __('Galeri') }}
                     </x-nav-link>
+                    <x-nav-link :href="route('admin.facility.index')" :active="request()->routeIs('admin.facility.*')">
+                        {{ __('Fasilitas') }}
+                    </x-nav-link>
+                    <x-nav-link :href="route('admin.achievement.index')" :active="request()->routeIs('admin.achievement.*')">
+                        {{ __('Prestasi') }}
+                    </x-nav-link>
                 </div>
             </div>
 
@@ -87,6 +93,12 @@
             </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('admin.gallery.index')" :active="request()->routeIs('admin.gallery.*')">
                 {{ __('Galeri') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('admin.facility.index')" :active="request()->routeIs('admin.facility.*')">
+                {{ __('Fasilitas') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('admin.achievement.index')" :active="request()->routeIs('admin.achievement.*')">
+                {{ __('Prestasi') }}
             </x-responsive-nav-link>
         </div>
 
