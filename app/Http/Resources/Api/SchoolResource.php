@@ -27,6 +27,7 @@ class SchoolResource extends JsonResource
             'logo_url'  => $identity?->logo ? asset('storage/' . $identity->logo) : null,
             'vision'    => $identity->vision ?? null,
             'mission'   => $identity->mission ?? null,
+            'curriculum'   => $identity->curriculum ?? null,
             'welcome_message' => $identity->welcome_message ?? null,
             // Social Media pada migrasi Anda adalah JSON
             'social_media' => $identity->social_media ?? [
